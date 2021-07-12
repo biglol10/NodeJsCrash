@@ -18,7 +18,7 @@ const courseRouter = require("./courses");
 const router = express.Router();
 
 // protect
-const { protect } = require("../middleware/auth");
+const { protect, authorize } = require("../middleware/auth");
 
 // Re-route into other resource routers
 // if /:bootcampId/courses is hit it is gonna continue on to courses.js router.route('/') and call getCourses
@@ -26,18 +26,20 @@ router.use("/:bootcampId/courses", courseRouter); // Think this as forwarding
 
 router.route("/radius/:zipcode/:distance").get(getBootcampsInRadius);
 
-router.route("/:id/photo").put(protect, bootcampPhotoUpload);
+router
+  .route("/:id/photo")
+  .put(protect, authorize("publisher", "admin"), bootcampPhotoUpload);
 
 // router.route("/").get(getBootcamps).post(createBootcamp);
 router
   .route("/")
   .get(advancedResults(Bootcamp, "courses"), getBootcamps)
-  .post(createBootcamp);
+  .post(protect, authorize("publisher", "admin"), createBootcamp);
 
 router
   .route("/:id")
   .get(getBootcamp)
-  .put(updateBootcamp)
-  .delete(deleteBootcamp);
+  .put(protect, authorize("publisher", "admin"), updateBootcamp)
+  .delete(protect, authorize("publisher", "admin"), deleteBootcamp);
 
 module.exports = router;

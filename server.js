@@ -32,7 +32,7 @@ app.use(cookieParser());
 
 // Dev logging middleware
 if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
+  app.use(morgan("dev")); // in console.log GET /api/v1/bootcamps?page=2&limit=2 200 648.149 ms - 3377
 }
 
 // File uploading
