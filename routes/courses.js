@@ -8,10 +8,10 @@ const {
   deleteCourse,
 } = require("../controllers/courses");
 const Course = require("../models/Course");
-const advancedResults = require("../middleware/advancedResults");
 
 const router = express.Router({ mergeParams: true }); // to share resource with bootcamps.js ... you are merging url params
 
+const advancedResults = require("../middleware/advancedResults");
 // protect
 const { protect, authorize } = require("../middleware/auth");
 
