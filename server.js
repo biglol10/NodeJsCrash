@@ -8,6 +8,12 @@ const errorHandler = require("./middleware/error");
 const fileupload = require("express-fileupload");
 const path = require("path");
 const cookieParser = require("cookie-parser");
+const mongoSanitize = require("express-mongo-sanitize"); // to prevent sql injection
+const helmet = require("helmet"); // helmetjs.github.io
+const xss = require("xss-clean"); // to prevent cross-site-scripting
+const rateLimit = require("express-rate-limit"); // Basic rate-limiting middleware for express
+const hpp = require("hpp"); // express middleware to protect against HTTP Parameter Pollution attacks
+const cors = require("cors");
 
 // Load env vars
 dotenv.config({ path: "./config/config.env" });
@@ -39,6 +45,28 @@ if (process.env.NODE_ENV === "development") {
 
 // File uploading
 app.use(fileupload());
+
+// Sanitize data
+app.use(mongoSanitize());
+
+// Set security headers
+app.use(helmet());
+
+// Prevent XSS attacks
+app.use(xss()); // "name": "ModernTech Bootcamp&lt;script>alert(1)&lt;/script>",  because of &lt we won't have script issues
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 100, // 429, Too many requests
+});
+app.use(limiter);
+
+// Prevent http param pollution
+app.use(hpp());
+
+// Enable CORS
+app.use(cors());
 
 // Set static folder
 app.use(express.static(path.join(__dirname, "public")));

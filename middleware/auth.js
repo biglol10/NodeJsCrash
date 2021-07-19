@@ -13,10 +13,9 @@ exports.protect = asyncHandler(async (req, res, next) => {
     // Set token from Bearer token in header
     token = req.headers.authorization.split(" ")[1];
     // Set token from cookie
+  } else if (req.cookies.token) {
+    token = req.cookies.token;
   }
-  // else if(req.cookies.token){
-  //     token = req.cookies.token
-  // }
 
   // Make sure token exists
   if (!token) {
@@ -27,7 +26,6 @@ exports.protect = asyncHandler(async (req, res, next) => {
     // Verify token
     // https://jwt.io/
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded); // { id: '60e7a4dd43a97e2cf424785f', iat: 1626067445, exp: 1628659445 }
 
     req.user = await User.findById(decoded.id); // in any route where we use this middleware, we have access to req.user
     next();
